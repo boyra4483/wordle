@@ -1,5 +1,7 @@
-import "./App.css";
+import classes from "./App.module.css";
+import Keyboard from "./components/Keyboard/Keyboard.jsx";
+import Board from "./components/Board/Board.jsx";
 
 export default function App() {
-  return <p>test</p>;
+  return <section className={classes["app"]}>{<Keyboard />}</section>;
 }
