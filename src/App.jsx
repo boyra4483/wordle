@@ -3,5 +3,5 @@ import Keyboard from "./components/Keyboard/Keyboard.jsx";
 import Board from "./components/Board/Board.jsx";
 
 export default function App() {
-  return <section className={classes["app"]}>{<Keyboard />}</section>;
+  return <section className={classes["app"]}>{<Board />}</section>;
 }

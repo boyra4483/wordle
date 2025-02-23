@@ -1,9 +1,18 @@
 import classes from "./Button.module.css";
 
-export default function Button({ source, content, color }) {
-  if (source == undefined) {
+export default function Button({
+  size = null,
+  source = null,
+  content = "",
+  color,
+}) {
+  const styles = size
+    ? { backgroundColor: color, ...size, opacity: "30%" }
+    : { backgroundColor: color };
+
+  if (source == null) {
     return (
-      <div style={{ backgroundColor: color }} className={classes["button"]}>
+      <div style={styles} className={classes["button"]}>
         {content}
       </div>
     );
