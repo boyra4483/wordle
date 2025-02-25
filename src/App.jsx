@@ -1,8 +1,8 @@
 import classes from "./App.module.css";
 import Keyboard from "./components/Keyboard/Keyboard.jsx";
 import Board from "./components/Board/Board.jsx";
-import { useState } from "react";
 import Button from "./components/Button/Button.jsx";
+import { useState } from "react";
 
 export default function App() {
   const [wordInfo, setwordInfo] = useState({
@@ -15,6 +15,7 @@ export default function App() {
   function handleKeyDown(e) {
     const key = e.key;
 
+    if (!inRange(key)) return;
     if (wordInfo.isAttempted) return;
     if (key == "Enter" && wordInfo.word.length < 5) return;
     if (key == "Backspace" && wordInfo.word.length == 0) return;
@@ -157,16 +158,54 @@ function getKeyboardButtons(key) {
 function getResult(word) {
   const guest = "apple".toLowerCase(); // test guessing word because have not api feature
   const result = [];
+
   for (let i = 0; i < word.length; i++) {
     if (guest[i] == word[i]) {
       result.push("#008000");
       continue;
     }
+
     if (guest.includes(word[i])) {
       result.push("#FFFF00");
       continue;
     }
+
     result.push("#000");
   }
+
   return result;
+}
+
+function inRange(key) {
+  const keys = [
+    "Q",
+    "W",
+    "E",
+    "R",
+    "T",
+    "Y",
+    "U",
+    "I",
+    "O",
+    "P",
+    "A",
+    "S",
+    "D",
+    "F",
+    "G",
+    "H",
+    "J",
+    "K",
+    "L",
+    "ENTER",
+    "Z",
+    "X",
+    "C",
+    "V",
+    "B",
+    "N",
+    "M",
+    "BACKSPACE",
+  ];
+  return keys.includes(key.toUpperCase());
 }
