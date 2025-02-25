@@ -5,14 +5,46 @@ import { useState } from "react";
 import Button from "./components/Button/Button.jsx";
 
 export default function App() {
-  const [key, setKey] = useState(null);
+  const [wordInfo, setwordInfo] = useState({
+    word: "",
+    key: "",
+    isAttempted: false,
+  });
+  const key = wordInfo.key;
 
   function handleKeyDown(e) {
-    setKey(e.key);
+    const key = e.key;
+
+    if (wordInfo.isAttempted) return;
+    if (key == "Enter" && wordInfo.word.length < 5) return;
+    if (key == "Backspace" && wordInfo.word.length == 0) return;
+
+    if (key == "Enter") {
+      return setwordInfo({
+        ...wordInfo,
+        isAttempted: true,
+      });
+    }
+    if (key == "Backspace") {
+      return setwordInfo({
+        ...wordInfo,
+        word: wordInfo.word.slice(0, -1),
+        key: key.toLowerCase(),
+      });
+    }
+    if ((wordInfo.word + key).length > 5) return;
+
+    setwordInfo({
+      word: wordInfo.word + key,
+      key: key.toLowerCase(),
+    });
   }
 
   function handleKeyUp() {
-    setKey(null);
+    setwordInfo({
+      ...wordInfo,
+      key: null,
+    });
   }
 
   return (
@@ -22,25 +54,46 @@ export default function App() {
       onKeyUp={handleKeyUp}
       className={classes["app"]}
     >
-      <Board buttons={getBoardButtons()} />
+      <Board
+        buttons={getBoardButtons(
+          wordInfo.word.toUpperCase(),
+          wordInfo.isAttempted
+        )}
+      />
       <Keyboard buttons={getKeyboardButtons(key)} />
     </section>
   );
 }
 
-function getBoardButtons() {
+function getBoardButtons(word, isAttempted) {
   const buttons = [];
+  const colors = isAttempted ? getResult(word.toLowerCase()) : null;
+
   for (let i = 0; i < 25; i++) {
-    buttons.push(
-      <Button
-        key={i}
-        size={{
-          width: "4.688em",
-          height: "4.688em",
-        }}
-        color={"#939B9F"}
-      />
-    );
+    if (i < word.length) {
+      buttons.push(
+        <Button
+          key={i}
+          size={{
+            width: "75px",
+            height: "75px",
+          }}
+          color={colors ? colors[i] : "#939B9F"}
+          content={word[i]}
+        />
+      );
+    } else {
+      buttons.push(
+        <Button
+          key={i}
+          size={{
+            width: "75px",
+            height: "75px",
+          }}
+          color={"#939B9F"}
+        />
+      );
+    }
   }
   return buttons;
 }
@@ -99,4 +152,21 @@ function getKeyboardButtons(key) {
   });
 
   return buttons;
+}
+
+function getResult(word) {
+  const guest = "apple".toLowerCase(); // test guessing word because have not api feature
+  const result = [];
+  for (let i = 0; i < word.length; i++) {
+    if (guest[i] == word[i]) {
+      result.push("#008000");
+      continue;
+    }
+    if (guest.includes(word[i])) {
+      result.push("#FFFF00");
+      continue;
+    }
+    result.push("#000");
+  }
+  return result;
 }
