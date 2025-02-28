@@ -5,47 +5,77 @@ import Button from "./components/Button/Button.jsx";
 import { useState } from "react";
 
 export default function App() {
-  const [wordInfo, setwordInfo] = useState({
-    word: "",
-    key: "",
-    isAttempted: false,
-  });
-  const key = wordInfo.key;
+  const [attemptList, setAttemptList] = useState([
+    {
+      word: "",
+      key: "",
+      isAttempted: false,
+    },
+  ]);
+  const attempt = getCurrentAttempt(attemptList);
 
   function handleKeyDown(e) {
     const key = e.key;
 
+    if (attemptList.length > 5) return;
+    if (attempt.isAttempted) return;
     if (!inRange(key)) return;
-    if (wordInfo.isAttempted) return;
-    if (key == "Enter" && wordInfo.word.length < 5) return;
-    if (key == "Backspace" && wordInfo.word.length == 0) return;
+    if (key == "Enter" && attempt.word.length < 5) return;
+    if (key == "Backspace" && attempt.word.length == 0) return;
 
     if (key == "Enter") {
-      return setwordInfo({
-        ...wordInfo,
-        isAttempted: true,
+      const nextAttempt = {
+        word: "",
+        key: "",
+        isAttempted: false,
+      };
+      const nextAttemptList = attemptList.map((attempt) => {
+        return attempt == attemptList.at(-1)
+          ? {
+              ...attempt,
+              isAttempted: true,
+            }
+          : attempt;
       });
+
+      attemptList.length == 5 ? null : nextAttemptList.push(nextAttempt);
+      return setAttemptList(nextAttemptList);
     }
     if (key == "Backspace") {
-      return setwordInfo({
-        ...wordInfo,
-        word: wordInfo.word.slice(0, -1),
-        key: key.toLowerCase(),
+      const nextAttemptList = attemptList.map((attempt) => {
+        return attempt == attemptList.at(-1)
+          ? {
+              ...attempt,
+              word: attempt.word.slice(0, -1),
+              key: key.toLowerCase(),
+            }
+          : attempt;
       });
+      return setAttemptList(nextAttemptList);
     }
-    if ((wordInfo.word + key).length > 5) return;
+    if ((attempt.word + key).length > 5) return;
 
-    setwordInfo({
-      word: wordInfo.word + key,
-      key: key.toLowerCase(),
+    const nextAttemptList = attemptList.map((attempt) => {
+      return attempt == attemptList.at(-1)
+        ? {
+            ...attempt,
+            word: (attempt.word + key).toUpperCase(),
+            key: key.toLowerCase(),
+          }
+        : attempt;
     });
+    setAttemptList(nextAttemptList);
   }
-
   function handleKeyUp() {
-    setwordInfo({
-      ...wordInfo,
-      key: null,
+    const nextAttemptList = attemptList.map((attempt) => {
+      return attempt == attemptList.at(-1)
+        ? {
+            ...attempt,
+            key: null,
+          }
+        : attempt;
     });
+    setAttemptList(nextAttemptList);
   }
 
   return (
@@ -55,23 +85,19 @@ export default function App() {
       onKeyUp={handleKeyUp}
       className={classes["app"]}
     >
-      <Board
-        buttons={getBoardButtons(
-          wordInfo.word.toUpperCase(),
-          wordInfo.isAttempted
-        )}
-      />
-      <Keyboard buttons={getKeyboardButtons(key)} />
+      <Board buttons={getBoardButtons(attemptList, attempt.isAttempted)} />
+      <Keyboard buttons={getKeyboardButtons(attempt.key)} />
     </section>
   );
 }
 
-function getBoardButtons(word, isAttempted) {
+function getBoardButtons(attempts, isAttempted) {
   const buttons = [];
-  const colors = isAttempted ? getResult(word.toLowerCase()) : null;
+  const attempt = getCurrentAttempt(attempts);
+  const colors = isAttempted ? getResult(attempt.word.toLowerCase()) : null;
 
   for (let i = 0; i < 25; i++) {
-    if (i < word.length) {
+    if (attempts.length * 5 - 5 > attempts.length * 5) {
       buttons.push(
         <Button
           key={i}
@@ -80,7 +106,7 @@ function getBoardButtons(word, isAttempted) {
             height: "75px",
           }}
           color={colors ? colors[i] : "#939B9F"}
-          content={word[i]}
+          content={attempt.word[i]}
         />
       );
     } else {
@@ -135,7 +161,7 @@ function getKeyboardButtons(key) {
     if (letter.startsWith("/src")) {
       return (
         <Button
-          color={"Backspace" == key ? "#c2c2c2" : "#d3d6da"}
+          color={"backspace" == key ? "#c2c2c2" : "#d3d6da"}
           key={id}
           source={letter}
         />
@@ -155,17 +181,16 @@ function getKeyboardButtons(key) {
   return buttons;
 }
 
-function getResult(word) {
+function getResult(attempt) {
   const guest = "apple".toLowerCase(); // test guessing word because have not api feature
   const result = [];
-
-  for (let i = 0; i < word.length; i++) {
-    if (guest[i] == word[i]) {
+  for (let i = 0; i < attempt.length; i++) {
+    if (guest[i] == attempt[i]) {
       result.push("#008000");
       continue;
     }
 
-    if (guest.includes(word[i])) {
+    if (guest.includes(attempt[i])) {
       result.push("#FFFF00");
       continue;
     }
@@ -208,4 +233,12 @@ function inRange(key) {
     "BACKSPACE",
   ];
   return keys.includes(key.toUpperCase());
+}
+
+function getCurrentAttempt(attempts) {
+  if (attempts.length == 1 || attempts.length == 5) {
+    return attempts.at(-1);
+  } else {
+    return attempts.at(-2);
+  }
 }
