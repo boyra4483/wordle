@@ -9,13 +9,14 @@ const wordClient = axios.create({
     return word;
   },
 });
+const words = [];
 
 export default async function getWords() {
-  const words = [];
+  if (words.length != 0) return words;
 
   async function fillingWords() {
     await getWord();
-    if (words.length != 2) return await fillingWords();
+    if (words.length != 5) return await fillingWords();
     return words;
   }
 
@@ -24,7 +25,7 @@ export default async function getWords() {
       await wordClient.get("https://api.api-ninjas.com/v1/randomword")
     ).data;
 
-    // if (word.length != 5) return getWord();
+    if (word.length != 5) return getWord();
     words.push(word.toLowerCase());
   }
 
