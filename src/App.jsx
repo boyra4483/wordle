@@ -16,15 +16,18 @@ export default function App() {
   ]);
   const attempt = getCurrentAttempt(attemptList);
 
-  function handleKeyDown(e) {
+  async function handleKeyDown(e) {
     const key = e.key;
 
     if (attemptList.at(-1).isAttempted) return;
     if (!inRange(key)) return;
+
     if (key == "Enter" && attemptList.at(-1).word.length < 5) return;
     if (key == "Backspace" && attemptList.at(-1).word.length == 0) return;
 
     if (key == "Enter") {
+      const colors = await getResult(attemptList.at(-1).word.toLowerCase());
+
       const nextAttempt = {
         word: "",
         key: "",
@@ -36,7 +39,7 @@ export default function App() {
           ? {
               ...attempt,
               isAttempted: true,
-              colors: getResult(attempt.word.toLowerCase()),
+              colors,
             }
           : attempt;
       });
@@ -56,8 +59,8 @@ export default function App() {
       });
       return setAttemptList(nextAttemptList);
     }
-    if ((attemptList.at(-1).word + key).length > 5) return;
 
+    if ((attemptList.at(-1).word + key).length > 5) return;
     const nextAttemptList = attemptList.map((attempt) => {
       return attempt == attemptList.at(-1)
         ? {
@@ -67,8 +70,10 @@ export default function App() {
           }
         : attempt;
     });
+
     setAttemptList(nextAttemptList);
   }
+
   function handleKeyUp() {
     const nextAttemptList = attemptList.map((attempt) => {
       return attempt == attemptList.at(-1)
@@ -176,17 +181,17 @@ function getKeyboardButtons(key) {
   return buttons;
 }
 
-function getResult(attempt) {
-  const guest = "apple".toLowerCase(); // test guessing word because have not api feature
+async function getResult(attempt) {
+  const guessWords = await randomWords();
   const result = [];
 
   for (let i = 0; i < attempt.length; i++) {
-    if (guest[i] == attempt[i]) {
+    if (guessWords[0][i] == attempt[i]) {
       result.push("#008000");
       continue;
     }
 
-    if (guest.includes(attempt[i])) {
+    if (guessWords[0].includes(attempt[i])) {
       result.push("#FFFF00");
       continue;
     }
@@ -194,6 +199,7 @@ function getResult(attempt) {
     result.push("#000");
   }
 
+  guessWords.splice(0, 1);
   return result;
 }
 
