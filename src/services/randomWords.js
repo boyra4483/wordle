@@ -21,9 +21,7 @@ export default async function getWords() {
 
   async function getWord() {
     const word = (
-      await wordClient.get(
-        "https://api.api-ninjas.com/v1/randomword?&type=noun"
-      )
+      await wordClient.get("https://api.api-ninjas.com/v1/randomword")
     ).data;
 
     // if (word.length != 5) return getWord();

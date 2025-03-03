@@ -3,12 +3,14 @@ import Keyboard from "./components/Keyboard/Keyboard.jsx";
 import Board from "./components/Board/Board.jsx";
 import Button from "./components/Button/Button.jsx";
 import { useState } from "react";
+import randomWords from "./services/randomWords.js";
 
 export default function App() {
   const [attemptList, setAttemptList] = useState([
     {
       word: "",
       key: "",
+      colors: ["#939B9F", "#939B9F", "#939B9F", "#939B9F", "#939B9F"],
       isAttempted: false,
     },
   ]);
@@ -17,16 +19,16 @@ export default function App() {
   function handleKeyDown(e) {
     const key = e.key;
 
-    if (attemptList.length > 5) return;
-    if (attempt.isAttempted) return;
+    if (attemptList.at(-1).isAttempted) return;
     if (!inRange(key)) return;
-    if (key == "Enter" && attempt.word.length < 5) return;
-    if (key == "Backspace" && attempt.word.length == 0) return;
+    if (key == "Enter" && attemptList.at(-1).word.length < 5) return;
+    if (key == "Backspace" && attemptList.at(-1).word.length == 0) return;
 
     if (key == "Enter") {
       const nextAttempt = {
         word: "",
         key: "",
+        colors: ["#939B9F", "#939B9F", "#939B9F", "#939B9F", "#939B9F"],
         isAttempted: false,
       };
       const nextAttemptList = attemptList.map((attempt) => {
@@ -34,6 +36,7 @@ export default function App() {
           ? {
               ...attempt,
               isAttempted: true,
+              colors: getResult(attempt.word.toLowerCase()),
             }
           : attempt;
       });
@@ -53,7 +56,7 @@ export default function App() {
       });
       return setAttemptList(nextAttemptList);
     }
-    if ((attempt.word + key).length > 5) return;
+    if ((attemptList.at(-1).word + key).length > 5) return;
 
     const nextAttemptList = attemptList.map((attempt) => {
       return attempt == attemptList.at(-1)
@@ -85,43 +88,35 @@ export default function App() {
       onKeyUp={handleKeyUp}
       className={classes["app"]}
     >
-      <Board buttons={getBoardButtons(attemptList, attempt.isAttempted)} />
+      <Board buttons={getBoardButtons(attemptList)} />
       <Keyboard buttons={getKeyboardButtons(attempt.key)} />
     </section>
   );
 }
 
-function getBoardButtons(attempts, isAttempted) {
+function getBoardButtons(attempts) {
   const buttons = [];
-  const attempt = getCurrentAttempt(attempts);
-  const colors = isAttempted ? getResult(attempt.word.toLowerCase()) : null;
 
-  for (let i = 0; i < 25; i++) {
-    if (attempts.length * 5 - 5 > attempts.length * 5) {
+  for (let i = 0; i < 5; i++) {
+    const attempt = attempts[i];
+
+    for (let j = 0; j < 5; j++) {
+      const letter = attempt?.word[j];
+
       buttons.push(
         <Button
-          key={i}
+          key={`${i + 1}.${j}`}
           size={{
             width: "75px",
             height: "75px",
           }}
-          color={colors ? colors[i] : "#939B9F"}
-          content={attempt.word[i]}
-        />
-      );
-    } else {
-      buttons.push(
-        <Button
-          key={i}
-          size={{
-            width: "75px",
-            height: "75px",
-          }}
-          color={"#939B9F"}
+          color={attempt ? attempt.colors[j] : "#939B9F"}
+          content={letter ? letter : null}
         />
       );
     }
   }
+
   return buttons;
 }
 
@@ -184,6 +179,7 @@ function getKeyboardButtons(key) {
 function getResult(attempt) {
   const guest = "apple".toLowerCase(); // test guessing word because have not api feature
   const result = [];
+
   for (let i = 0; i < attempt.length; i++) {
     if (guest[i] == attempt[i]) {
       result.push("#008000");
