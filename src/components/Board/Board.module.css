@@ -1,0 +1,17 @@
+.board {
+  display: grid;
+  gap: 11px;
+
+  grid-template-columns: repeat(5, auto);
+  grid-template-rows: repeat(5, auto);
+
+  max-width: 421px;
+  margin-bottom: 87px;
+
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 800;
+  font-size: 35px;
+
+  color: #ffffff;
+}

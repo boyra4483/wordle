@@ -1,0 +1,17 @@
+.keyboard {
+  display: flex;
+
+  flex-flow: row wrap;
+  gap: 9.95px 9.41px;
+
+  justify-content: center;
+  max-width: 535px;
+
+  font-family: "Roboto";
+  font-style: normal;
+
+  font-weight: 600;
+  font-size: 18px;
+
+  color: #56575e;
+}
