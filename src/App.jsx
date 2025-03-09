@@ -17,17 +17,22 @@ export default function App() {
   const attempt = getCurrentAttempt(attemptList);
 
   async function handleKeyDown(e) {
-    const key = e.key;
+    let key =
+      e.key == undefined
+        ? e.target.textContent.toLowerCase()
+        : e.key.toLowerCase();
 
+    if (key == "") {
+      key = "backspace";
+    }
     if (attemptList.at(-1).isAttempted) return;
     if (!inRange(key)) return;
 
-    if (key == "Enter" && attemptList.at(-1).word.length < 5) return;
-    if (key == "Backspace" && attemptList.at(-1).word.length == 0) return;
+    if (key == "enter" && attemptList.at(-1).word.length < 5) return;
+    if (key == "backspace" && attemptList.at(-1).word.length == 0) return;
 
-    if (key == "Enter") {
+    if (key == "enter") {
       const colors = await getResult(attemptList.at(-1).word.toLowerCase());
-
       const nextAttempt = {
         word: "",
         key: "",
@@ -47,7 +52,7 @@ export default function App() {
       attemptList.length == 5 ? null : nextAttemptList.push(nextAttempt);
       return setAttemptList(nextAttemptList);
     }
-    if (key == "Backspace") {
+    if (key == "backspace") {
       const nextAttemptList = attemptList.map((attempt) => {
         return attempt == attemptList.at(-1)
           ? {
@@ -73,7 +78,6 @@ export default function App() {
 
     setAttemptList(nextAttemptList);
   }
-
   function handleKeyUp() {
     const nextAttemptList = attemptList.map((attempt) => {
       return attempt == attemptList.at(-1)
@@ -83,18 +87,30 @@ export default function App() {
           }
         : attempt;
     });
+
     setAttemptList(nextAttemptList);
+  }
+  function handleClickButton(e) {
+    const target = e.target;
+    if (target.tagName == "SECTION") return;
+
+    handleKeyDown(e);
   }
 
   return (
     <section
       tabIndex={-1}
+      onLoad={(e) => e.currentTarget.focus()}
       onKeyDown={handleKeyDown}
       onKeyUp={handleKeyUp}
       className={classes["app"]}
     >
       <Board buttons={getBoardButtons(attemptList)} />
-      <Keyboard buttons={getKeyboardButtons(attempt.key)} />
+      <Keyboard
+        onClickButton={handleClickButton}
+        onClickButtonUp={handleKeyUp}
+        buttons={getKeyboardButtons(attempt.key)}
+      />
     </section>
   );
 }
@@ -124,7 +140,6 @@ function getBoardButtons(attempts) {
 
   return buttons;
 }
-
 function getKeyboardButtons(key) {
   const keys = [
     "Q",
@@ -180,7 +195,6 @@ function getKeyboardButtons(key) {
 
   return buttons;
 }
-
 async function getResult(attempt) {
   const guessWords = await randomWords();
   const result = [];
@@ -202,7 +216,6 @@ async function getResult(attempt) {
   guessWords.splice(0, 1);
   return result;
 }
-
 function inRange(key) {
   const keys = [
     "Q",
@@ -236,7 +249,6 @@ function inRange(key) {
   ];
   return keys.includes(key.toUpperCase());
 }
-
 function getCurrentAttempt(attempts) {
   if (attempts.length == 1 || attempts.length == 5) {
     return attempts.at(-1);
