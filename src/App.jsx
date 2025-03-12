@@ -4,6 +4,7 @@ import Board from "./components/Board/Board.jsx";
 import Button from "./components/Button/Button.jsx";
 import { useState } from "react";
 import randomWords from "./services/randomWords.js";
+import deleteSvg from "./assets/icons/delete.svg";
 
 export default function App() {
   const [attemptList, setAttemptList] = useState([
@@ -169,11 +170,11 @@ function getKeyboardButtons(key) {
     "B",
     "N",
     "M",
-    "/src/assets/icons/delete.svg",
+    `${deleteSvg}`,
   ];
 
   const buttons = keys.map((letter, id) => {
-    if (letter.startsWith("/src")) {
+    if (letter == keys.at(-1)) {
       return (
         <Button
           color={"backspace" == key ? "#c2c2c2" : "#d3d6da"}
