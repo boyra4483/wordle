@@ -9,3 +9,14 @@
 
   outline: none;
 }
+
+.gratitude {
+  font-family: "Roboto";
+  font-style: normal;
+
+  font-weight: 600;
+  color: #56575e;
+}
+.gratitude > a:hover {
+  text-decoration: none;
+}

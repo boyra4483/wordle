@@ -99,20 +99,32 @@ export default function App() {
   }
 
   return (
-    <section
-      tabIndex={-1}
-      onLoad={(e) => e.currentTarget.focus()}
-      onKeyDown={handleKeyDown}
-      onKeyUp={handleKeyUp}
-      className={classes["app"]}
-    >
-      <Board buttons={getBoardButtons(attemptList)} />
-      <Keyboard
-        onClickButton={handleClickButton}
-        onClickButtonUp={handleKeyUp}
-        buttons={getKeyboardButtons(attempt.key)}
-      />
-    </section>
+    <>
+      <section
+        tabIndex={-1}
+        onLoad={(e) => e.currentTarget.focus()}
+        onKeyDown={handleKeyDown}
+        onKeyUp={handleKeyUp}
+        className={classes["app"]}
+      >
+        <Board buttons={getBoardButtons(attemptList)} />
+        <Keyboard
+          onClickButton={handleClickButton}
+          onClickButtonUp={handleKeyUp}
+          buttons={getKeyboardButtons(attempt.key)}
+        />
+        <p className={classes["gratitude"]}>
+          thank{" "}
+          <a
+            href="https://www.figma.com/community/file/1067800759772796786"
+            target="_blank"
+          >
+            Muhammet Çalış
+          </a>{" "}
+          very much for this free template
+        </p>
+      </section>
+    </>
   );
 }
 
