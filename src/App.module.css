@@ -30,3 +30,11 @@
 .gratitude > a:hover {
   text-decoration: none;
 }
+
+.gratitude > a:visited {
+  color: #33459b;
+}
+
+.gratitude > a:hover {
+  text-decoration: none;
+}
