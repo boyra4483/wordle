@@ -1,5 +1,6 @@
 .app {
   display: flex;
+  padding: 20px 0;
 
   flex-direction: column;
   align-items: center;
@@ -14,9 +15,18 @@
   font-family: "Roboto";
   font-style: normal;
 
-  font-weight: 600;
+  font-weight: 800;
   color: #56575e;
 }
+
+.gratitude > a:link {
+  color: #ff8b00;
+}
+
+.gratitude > a:visited {
+  color: #33459b;
+}
+
 .gratitude > a:hover {
   text-decoration: none;
 }

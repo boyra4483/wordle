@@ -31,3 +31,5 @@ export default async function getWords() {
 
   return await fillingWords();
 }
+
+export { words };
