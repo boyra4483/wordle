@@ -107,7 +107,10 @@ export default function App() {
         onKeyUp={handleKeyUp}
         className={classes["app"]}
       >
-        <Board buttons={getBoardButtons(attemptList)} />
+        <Board
+          resetAttemptList={setAttemptList}
+          buttons={getBoardButtons(attemptList)}
+        />
         <Keyboard
           onClickButton={handleClickButton}
           onClickButtonUp={handleKeyUp}
